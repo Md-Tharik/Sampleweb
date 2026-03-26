@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journey & Co. — Trip Organiser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --forest:#1a3028;
+  --sand:#f2ead8;
+  --amber:#d4954a;
+  --sky:#4a8fa8;
+  --moss:#5a7a52;
+  --paper:#faf7f0;
+}
+body{font-family:'Outfit',sans-serif;background:var(--forest);color:var(--sand);overflow-x:hidden;cursor:none}
+.cursor{position:fixed;width:10px;height:10px;background:var(--amber);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .15s}
+.cursor-ring{position:fixed;width:38px;height:38px;border:1.5px solid rgba(212,149,74,.45);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s}
+
+/* ══ PAGE 1: HUB ══ */
+#p1{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#0d1f18 0%,#1a3028 50%,#0f1e2a 100%);
+}
+#p1::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 34% 8%,rgba(255,255,255,.3) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 56% 22%,rgba(255,255,255,.4) 0%,transparent 100%),
+    radial-gradient(1px 1px at 78% 6%,rgba(255,255,255,.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 91% 15%,rgba(255,255,255,.3) 0%,transparent 100%),
+    radial-gradient(1px 1px at 23% 45%,rgba(255,255,255,.2) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 67% 40%,rgba(255,255,255,.35) 0%,transparent 100%),
+    radial-gradient(1px 1px at 88% 58%,rgba(255,255,255,.3) 0%,transparent 100%),
+    radial-gradient(1px 1px at 5% 75%,rgba(255,255,255,.4) 0%,transparent 100%);
+}
+#p1::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:32%;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 280'%3E%3Cpath fill='%230d1a13' d='M0,260L80,240L160,200L240,180L340,140L440,170L520,120L620,155L720,100L820,140L920,95L1020,135L1100,85L1200,120L1300,90L1380,110L1440,95L1440,280L0,280Z'/%3E%3C/svg%3E") no-repeat bottom/cover;
+  pointer-events:none;z-index:1;
+}
+.aurora{position:absolute;top:-10%;left:10%;right:10%;height:60%;background:radial-gradient(ellipse at 50% 40%,rgba(74,143,168,.12) 0%,transparent 70%),radial-gradient(ellipse at 30% 60%,rgba(90,122,82,.1) 0%,transparent 60%);pointer-events:none;z-index:0;animation:aur 8s ease-in-out infinite alternate}
+@keyframes aur{0%{opacity:.6;transform:scale(1)}100%{opacity:1;transform:scale(1.08)}}
+.hub-wrap{position:relative;z-index:2;text-align:center;padding:2rem 1.5rem;width:100%;max-width:500px}
+.compass{width:68px;height:68px;margin:0 auto 1.4rem;border:2px solid rgba(212,149,74,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;opacity:0;animation:up .7s .1s forwards}
+.compass::before{content:'';position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(212,149,74,.12)}
+.compass svg{width:34px;height:34px;fill:var(--amber)}
+.hub-eyebrow{font-family:'Bebas Neue',sans-serif;font-size:.72rem;letter-spacing:.4em;color:var(--amber);margin-bottom:.7rem;opacity:0;animation:up .7s .25s forwards}
+.hub-name{font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,10vw,5.5rem);font-weight:700;line-height:.95;letter-spacing:-.01em;margin-bottom:.4rem;opacity:0;animation:up .7s .4s forwards}
+.hub-name span{color:var(--amber);font-style:italic}
+.hub-tagline{font-size:.8rem;font-weight:300;color:rgba(242,234,216,.4);letter-spacing:.14em;margin-bottom:2.8rem;opacity:0;animation:up .7s .55s forwards}
+.s-list{display:flex;flex-direction:column;opacity:0;animation:up .7s .7s forwards}
+.s-item{display:flex;align-items:center;justify-content:space-between;padding:.95rem 1.4rem;border:1px solid rgba(242,234,216,.1);border-bottom:none;text-decoration:none;color:var(--sand);position:relative;overflow:hidden;transition:color .3s;cursor:none}
+.s-item:first-child{border-radius:6px 6px 0 0}
+.s-item:last-child{border-bottom:1px solid rgba(242,234,216,.1);border-radius:0 0 6px 6px}
+.s-item::before{content:'';position:absolute;left:0;top:0;width:0;height:100%;transition:width .4s cubic-bezier(.4,0,.2,1);z-index:0}
+.s-item:hover::before{width:100%}
+.s-item:hover .s-arr{transform:translateX(5px);opacity:1}
+.s-item.tt::before{background:#010101}
+.s-item.ig::before{background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)}
+.s-item.yt::before{background:#ff0000}
+.s-item.fb::before{background:#1877f2}
+.s-item.web::before{background:var(--amber)}
+.s-item.web:hover{color:var(--forest)}
+.s-item.web:hover .s-handle{color:rgba(26,48,40,.5)}
+.s-lft{display:flex;align-items:center;gap:.85rem;position:relative;z-index:1}
+.s-ic{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(255,255,255,.07);flex-shrink:0}
+.s-ic svg{width:16px;height:16px;fill:currentColor}
+.s-label{font-size:.88rem;font-weight:500}
+.s-handle{font-size:.7rem;color:rgba(242,234,216,.38);margin-top:1px;transition:color .3s}
+.s-arr{position:relative;z-index:1;font-size:1.1rem;opacity:.4;transition:transform .3s,opacity .3s}
+.scroll-cue{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:.4rem;font-size:.65rem;letter-spacing:.25em;color:rgba(242,234,216,.3);opacity:0;animation:up 1s 1.4s forwards}
+.scroll-line{width:1px;height:44px;background:linear-gradient(to bottom,var(--amber),transparent);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scaleY(1)}50%{opacity:.4;transform:scaleY(.6)}}
+@keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ PAGE 2: PORTFOLIO ══ */
+#p2{background:var(--paper);color:var(--forest)}
+
+/* NAV — invisible until scrolled into p2, always has BG when visible */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:1rem 4rem;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(250,247,240,0.97);
+  backdrop-filter:blur(14px);
+  box-shadow:0 2px 24px rgba(26,48,40,.08);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .4s,padding .4s;
+}
+.nav.visible{pointer-events:all;opacity:1}
+.nav.compact{padding:.7rem 4rem}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:700;color:var(--forest);text-decoration:none}
+.nav-logo span{color:var(--amber);font-style:italic}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(26,48,40,.6);text-decoration:none;transition:color .2s;cursor:none;font-weight:500}
+.nav-links a:hover{color:var(--forest)}
+
+/* HERO */
+.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:8rem 6rem 4rem;gap:4rem;overflow:hidden;background:linear-gradient(135deg,#f2ead8 0%,#e8dfc8 100%)}
+.hero-eyebrow{font-family:'Bebas Neue',sans-serif;font-size:.72rem;letter-spacing:.4em;color:var(--amber);margin-bottom:1.2rem;display:flex;align-items:center;gap:.8rem}
+.hero-eyebrow::before{content:'';width:28px;height:1px;background:var(--amber)}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,5vw,5rem);font-weight:700;line-height:1;letter-spacing:-.02em;margin-bottom:1.8rem}
+.hero-h1 em{font-style:italic;color:var(--amber);display:block}
+.hero-desc{font-size:.96rem;line-height:1.85;color:rgba(26,48,40,.62);max-width:400px;margin-bottom:2.8rem;font-weight:300}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap}
+.btn-dark{padding:.85rem 2rem;background:var(--forest);color:var(--sand);font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.1em;text-decoration:none;border-radius:3px;transition:background .3s,transform .2s;cursor:none}
+.btn-dark:hover{background:var(--amber);color:var(--forest);transform:translateY(-2px)}
+.btn-ghost{padding:.85rem 2rem;border:1.5px solid var(--forest);color:var(--forest);font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.1em;text-decoration:none;border-radius:3px;transition:all .3s;cursor:none}
+.btn-ghost:hover{background:var(--forest);color:var(--sand);transform:translateY(-2px)}
+.hero-vis{position:relative;display:flex;justify-content:center}
+.hero-frame{position:relative;width:min(400px,90%)}
+.hero-frame::before{content:'';position:absolute;top:-18px;right:-18px;width:100%;height:100%;border:2px solid rgba(212,149,74,.55);border-radius:6px;z-index:0}
+.hero-photo{position:relative;z-index:1;width:100%;aspect-ratio:3/4;border-radius:6px;overflow:hidden;background:linear-gradient(160deg,#2c4a3a 0%,#1a3028 60%,#0f2418 100%);display:flex;align-items:flex-end;justify-content:center}
+.p-svg{width:78%;filter:drop-shadow(0 -8px 24px rgba(0,0,0,.2))}
+.hero-tag{position:absolute;bottom:28px;left:-24px;z-index:2;background:var(--forest);color:var(--sand);padding:.9rem 1.2rem;border-radius:4px;box-shadow:0 16px 40px rgba(26,48,40,.25);border-left:3px solid var(--amber)}
+.hero-tag-n{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--amber);line-height:1}
+.hero-tag-l{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;opacity:.65;margin-top:2px}
+
+/* SECTIONS */
+.sec{padding:7rem 6rem}
+.sec-dark{background:var(--forest);color:var(--sand)}
+.sec-mid{background:#eee8d8}
+.sec-lbl{font-family:'Bebas Neue',sans-serif;font-size:.7rem;letter-spacing:.4em;color:var(--amber);margin-bottom:.8rem;display:flex;align-items:center;gap:.7rem}
+.sec-lbl::before{content:'✦';font-size:.6rem}
+.sec-ttl{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:700;line-height:1.05;letter-spacing:-.01em;margin-bottom:1.5rem}
+.sec-ttl em{font-style:italic;color:var(--amber)}
+
+/* DESTINATIONS */
+.dest-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:3rem}
+.dest-card{position:relative;border-radius:8px;overflow:hidden;cursor:none;aspect-ratio:4/3}
+.dest-card:first-child{grid-column:span 2;aspect-ratio:16/9}
+.dest-bg{width:100%;height:100%;transition:transform .6s cubic-bezier(.4,0,.2,1)}
+.dest-card:hover .dest-bg{transform:scale(1.07)}
+.dest-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(13,26,19,.85) 0%,transparent 55%);padding:1.5rem;display:flex;flex-direction:column;justify-content:flex-end}
+.dest-country{font-family:'Bebas Neue',sans-serif;font-size:.65rem;letter-spacing:.25em;color:var(--amber);margin-bottom:.3rem}
+.dest-name{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:#fff}
+.dest-detail{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:.2rem}
+.bg-a{background:linear-gradient(160deg,#1a3a2e,#2a5a44)}
+.bg-b{background:linear-gradient(160deg,#1e2a3e,#2a3e6a)}
+.bg-c{background:linear-gradient(160deg,#3a2218,#6a3a24)}
+.bg-d{background:linear-gradient(160deg,#1a2c3e,#2a4a5a)}
+.bg-e{background:linear-gradient(160deg,#2a2a1a,#4a4a2a)}
+.card-deco{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Cormorant Garamond',serif;font-size:clamp(3.5rem,10vw,8rem);font-weight:700;color:rgba(255,255,255,.06);white-space:nowrap;pointer-events:none;letter-spacing:-.02em}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;margin-top:4rem}
+.about-txt p{font-size:.95rem;line-height:1.9;color:rgba(242,234,216,.6);margin-bottom:1.1rem;font-weight:300}
+.tags{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:1.8rem}
+.tag-pill{padding:.35rem .9rem;border:1px solid rgba(212,149,74,.3);border-radius:999px;font-size:.74rem;letter-spacing:.04em;color:var(--amber);transition:all .2s}
+.tag-pill:hover{background:var(--amber);color:var(--forest)}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.stat{padding:1.8rem;border:1px solid rgba(242,234,216,.08);border-radius:6px;transition:border-color .3s,transform .3s}
+.stat:hover{border-color:rgba(212,149,74,.4);transform:translateY(-4px)}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:700;color:var(--amber);line-height:1}
+.stat-d{font-size:.74rem;color:rgba(242,234,216,.45);margin-top:.3rem;line-height:1.5}
+
+/* SERVICES */
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;margin-top:3rem}
+.svc{padding:2.2rem 1.8rem;background:white;border-radius:6px;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s}
+.svc::after{content:'';position:absolute;bottom:0;left:0;width:0;height:3px;background:var(--amber);transition:width .4s}
+.svc:hover::after{width:100%}
+.svc:hover{transform:translateY(-5px);box-shadow:0 18px 45px rgba(26,48,40,.1)}
+.svc-ico{font-size:1.8rem;margin-bottom:1rem}
+.svc-ttl{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;margin-bottom:.6rem;color:var(--forest)}
+.svc-dsc{font-size:.83rem;line-height:1.8;color:rgba(26,48,40,.55);font-weight:300}
+
+/* TESTIMONIALS */
+.testi-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.8rem;margin-top:3rem}
+.testi{padding:2.2rem;background:rgba(242,234,216,.04);border:1px solid rgba(242,234,216,.1);border-radius:6px;transition:border-color .3s}
+.testi:hover{border-color:rgba(212,149,74,.35)}
+.testi-q{font-family:'Cormorant Garamond',serif;font-size:1rem;line-height:1.8;color:rgba(242,234,216,.78);font-style:italic;margin-bottom:1.4rem}
+.testi-auth{display:flex;align-items:center;gap:.9rem}
+.testi-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:var(--forest)}
+.testi-nm{font-size:.84rem;font-weight:500;color:var(--sand)}
+.testi-rl{font-size:.7rem;color:rgba(242,234,216,.4);margin-top:1px}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;margin-top:4rem}
+.c-info p{font-size:.95rem;line-height:1.9;color:rgba(26,48,40,.58);font-weight:300;margin-bottom:1.8rem}
+.c-row{display:flex;align-items:center;gap:.9rem;margin-bottom:.9rem;font-size:.87rem;color:rgba(26,48,40,.65)}
+.c-form{display:flex;flex-direction:column;gap:1.1rem}
+.c-dbl{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.fg{display:flex;flex-direction:column;gap:.35rem}
+.fg label{font-size:.67rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(26,48,40,.45);font-weight:500}
+.fg input,.fg textarea,.fg select{padding:.8rem 1rem;border:1.5px solid rgba(26,48,40,.12);border-radius:3px;font-family:'Outfit',sans-serif;font-size:.87rem;color:var(--forest);background:transparent;transition:border-color .2s;resize:none;outline:none;cursor:none;appearance:none;-webkit-appearance:none}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--amber)}
+.fg textarea{height:120px}
+.c-submit{padding:.9rem 2.4rem;background:var(--forest);color:var(--sand);font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:.12em;border:none;border-radius:3px;cursor:none;transition:background .3s,transform .2s;align-self:flex-start}
+.c-submit:hover{background:var(--amber);color:var(--forest);transform:translateY(-2px)}
+
+/* FOOTER */
+footer{background:#0d1a13;padding:2.5rem 6rem;display:flex;align-items:center;justify-content:space-between}
+.foot-logo{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:rgba(242,234,216,.55)}
+.foot-logo span{color:var(--amber);font-style:italic}
+.foot-copy{font-size:.7rem;color:rgba(242,234,216,.22);letter-spacing:.05em}
+
+/* REVEAL */
+.rev{opacity:0;transform:translateY(36px);transition:opacity .75s ease,transform .75s ease}
+.rev-l{opacity:0;transform:translateX(-36px);transition:opacity .75s ease,transform .75s ease}
+.rev-r{opacity:0;transform:translateX(36px);transition:opacity .75s ease,transform .75s ease}
+.rev.on,.rev-l.on,.rev-r.on{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+
+/* MOBILE */
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;padding:7rem 2rem 4rem;text-align:center}
+  .hero-eyebrow{justify-content:center}
+  .hero-btns{justify-content:center}
+  .hero-desc{max-width:100%;margin-inline:auto}
+  .hero-vis{order:-1}
+  .hero-tag{left:auto;right:10px}
+  .about-grid,.contact-grid{grid-template-columns:1fr;gap:3rem}
+  .dest-grid{grid-template-columns:1fr}
+  .dest-card:first-child{grid-column:span 1}
+  .svc-grid{grid-template-columns:1fr}
+  .testi-grid{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .sec{padding:5rem 2rem}
+  .c-dbl{grid-template-columns:1fr}
+  footer{flex-direction:column;gap:1rem;text-align:center;padding:2rem}
+  .nav,.nav.compact{padding:.85rem 1.5rem}
+  .nav-links{gap:1.2rem}
+  body{cursor:default}
+  .cursor,.cursor-ring{display:none}
+  a,button,.s-item,.dest-card,.svc,.testi,.stat,.c-submit,.fg input,.fg textarea,.fg select,.btn-dark,.btn-ghost,.nav-links a{cursor:pointer}
+}
+@media(max-width:500px){
+  .hub-name{font-size:2.8rem}
+  .nav-links{gap:.9rem}
+  .nav-links a{font-size:.65rem;letter-spacing:.08em}
+}
+</style>
+</head>
+<body>
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="ring"></div>
+
+<!-- ══════════ PAGE 1: SOCIAL HUB ══════════ -->
+<section id="p1">
+  <div class="aurora"></div>
+  <div class="hub-wrap">
+    <div class="compass">
+      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="24,4 27,20 24,24 21,20" fill="#d4954a"/>
+        <polygon points="24,44 27,28 24,24 21,28" fill="rgba(212,149,74,0.35)"/>
+        <polygon points="4,24 20,21 24,24 20,27" fill="rgba(212,149,74,0.35)"/>
+        <polygon points="44,24 28,21 24,24 28,27" fill="rgba(212,149,74,0.25)"/>
+        <circle cx="24" cy="24" r="3.5" fill="#d4954a"/>
+      </svg>
+    </div>
+    <p class="hub-eyebrow">Trip Organiser · Travel Designer</p>
+    <h1 class="hub-name">Journey<span>&amp;Co.</span></h1>
+    <p class="hub-tagline">Crafting Extraordinary Journeys · Worldwide</p>
+
+    <div class="s-list">
+      <a href="#" target="_blank" class="s-item tt">
+        <div class="s-lft">
+          <div class="s-ic"><svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.77a4.85 4.85 0 0 1-1.01-.08z"/></svg></div>
+          <div><div class="s-label">TikTok</div><div class="s-handle">@journeyandco</div></div>
+        </div><span class="s-arr">→</span>
+      </a>
+      <a href="#" target="_blank" class="s-item ig">
+        <div class="s-lft">
+          <div class="s-ic"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></div>
+          <div><div class="s-label">Instagram</div><div class="s-handle">@journey.and.co</div></div>
+        </div><span class="s-arr">→</span>
+      </a>
+      <a href="#" target="_blank" class="s-item yt">
+        <div class="s-lft">
+          <div class="s-ic"><svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
+          <div><div class="s-label">YouTube</div><div class="s-handle">Journey & Co. Travel</div></div>
+        </div><span class="s-arr">→</span>
+      </a>
+      <a href="#" target="_blank" class="s-item fb">
+        <div class="s-lft">
+          <div class="s-ic"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div>
+          <div><div class="s-label">Facebook</div><div class="s-handle">Journey & Co. Official</div></div>
+        </div><span class="s-arr">→</span>
+      </a>
+      <a href="#p2" class="s-item web" id="webLink">
+        <div class="s-lft">
+          <div class="s-ic"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div>
+          <div><div class="s-label">Our Website</div><div class="s-handle">journeyandco.com — Scroll to explore ↓</div></div>
+        </div><span class="s-arr">↓</span>
+      </a>
+    </div>
+  </div>
+  <div class="scroll-cue"><span>SCROLL</span><div class="scroll-line"></div></div>
+</section>
+
+<!-- ══════════ PAGE 2: FULL PORTFOLIO ══════════ -->
+<div id="p2">
+
+  <!-- NAV always has solid bg, only shows when in p2 -->
+  <nav class="nav" id="nav">
+    <a href="#p2" class="nav-logo">Journey <span>&amp; Co.</span></a>
+    <ul class="nav-links">
+      <li><a href="#destinations">Destinations</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#contact">Book a Trip</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div>
+      <p class="hero-eyebrow rev">Award-Winning Trip Organiser</p>
+      <h1 class="hero-h1 rev d1">Your World,<em>Curated.</em></h1>
+      <p class="hero-desc rev d2">We design bespoke travel experiences that go beyond the ordinary — from remote Himalayan treks to private Amalfi Coast villas. Every journey is crafted around you.</p>
+      <div class="hero-btns rev d3">
+        <a href="#destinations" class="btn-dark">Explore Destinations</a>
+        <a href="#contact" class="btn-ghost">Plan My Trip</a>
+      </div>
+    </div>
+    <div class="hero-vis rev-r">
+      <div class="hero-frame">
+        <div class="hero-photo">
+          <svg class="p-svg" viewBox="0 0 300 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="85" y="210" width="130" height="160" rx="18" fill="#3d5a4a"/>
+            <rect x="95" y="220" width="110" height="140" rx="12" fill="#4a6e5a"/>
+            <rect x="115" y="240" width="70" height="45" rx="6" fill="#3d5a4a"/>
+            <rect x="105" y="205" width="18" height="80" rx="9" fill="#2c4a38"/>
+            <rect x="177" y="205" width="18" height="80" rx="9" fill="#2c4a38"/>
+            <rect x="70" y="190" width="160" height="130" rx="20" fill="#d4954a"/>
+            <path d="M120 190 L150 225 L180 190" fill="#b8784a"/>
+            <rect x="20" y="195" width="58" height="100" rx="22" fill="#d4954a"/>
+            <rect x="222" y="195" width="58" height="100" rx="22" fill="#d4954a"/>
+            <ellipse cx="49" cy="303" rx="22" ry="16" fill="#c4956a"/>
+            <rect x="38" y="308" width="22" height="38" rx="8" fill="#4a8fa8"/>
+            <rect x="41" y="304" width="16" height="8" rx="4" fill="#3a7a90"/>
+            <ellipse cx="251" cy="303" rx="22" ry="16" fill="#c4956a"/>
+            <rect x="234" y="290" width="40" height="30" rx="3" fill="#f2ead8"/>
+            <path d="M238 297 L262 297 M238 302 L255 302 M238 307 L250 307" stroke="#3d5a4a" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="255" cy="296" r="3" fill="#d4954a"/>
+            <rect x="130" y="158" width="40" height="42" rx="10" fill="#c4956a"/>
+            <ellipse cx="150" cy="130" rx="62" ry="70" fill="#c4956a"/>
+            <ellipse cx="150" cy="72" rx="70" ry="18" fill="#2c4a38"/>
+            <rect x="88" y="58" width="124" height="32" rx="8" fill="#3d5a4a"/>
+            <rect x="96" y="62" width="108" height="24" rx="6" fill="#4a6e5a"/>
+            <rect x="88" y="82" width="124" height="8" rx="3" fill="#d4954a" opacity=".65"/>
+            <ellipse cx="128" cy="132" rx="9" ry="10" fill="white"/>
+            <ellipse cx="172" cy="132" rx="9" ry="10" fill="white"/>
+            <ellipse cx="130" cy="134" rx="5.5" ry="6.5" fill="#1a0e05"/>
+            <ellipse cx="174" cy="134" rx="5.5" ry="6.5" fill="#1a0e05"/>
+            <circle cx="132" cy="132" r="1.8" fill="white"/>
+            <circle cx="176" cy="132" r="1.8" fill="white"/>
+            <path d="M118 118 Q128 112 138 118" stroke="#5a3a1a" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M162 118 Q172 112 182 118" stroke="#5a3a1a" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <path d="M150 140 Q145 152 148 156 Q150 158 152 156 Q155 152 150 140" fill="#b8856a"/>
+            <path d="M135 166 Q150 178 165 166" stroke="#8b5e3c" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <ellipse cx="115" cy="158" rx="10" ry="7" fill="#e0927a" opacity=".3"/>
+            <ellipse cx="185" cy="158" rx="10" ry="7" fill="#e0927a" opacity=".3"/>
+          </svg>
+        </div>
+      </div>
+      <div class="hero-tag">
+        <div class="hero-tag-n">500+</div>
+        <div class="hero-tag-l">Trips<br>Planned</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DESTINATIONS -->
+  <section class="sec sec-mid" id="destinations">
+    <p class="sec-lbl rev">Featured Destinations</p>
+    <h2 class="sec-ttl rev d1">Where Will Your<br><em>Next Story Begin?</em></h2>
+    <div class="dest-grid">
+      <div class="dest-card rev d1">
+        <div class="dest-bg bg-a" style="height:100%"><div class="card-deco">JAPAN</div></div>
+        <div class="dest-overlay">
+          <p class="dest-country">Asia · 10–14 Days</p>
+          <p class="dest-name">Cherry Blossoms of Kyoto</p>
+          <p class="dest-detail">Culture · Temples · Gastronomy</p>
+        </div>
+      </div>
+      <div class="dest-card rev d2">
+        <div class="dest-bg bg-b" style="height:100%"><div class="card-deco">PERU</div></div>
+        <div class="dest-overlay">
+          <p class="dest-country">South America · 12 Days</p>
+          <p class="dest-name">Sacred Valley Trek</p>
+          <p class="dest-detail">Adventure · History · Altitude</p>
+        </div>
+      </div>
+      <div class="dest-card rev d1">
+        <div class="dest-bg bg-c" style="height:100%"><div class="card-deco">MOROCCO</div></div>
+        <div class="dest-overlay">
+          <p class="dest-country">Africa · 8 Days</p>
+          <p class="dest-name">Desert Dunes & Medinas</p>
+          <p class="dest-detail">Culture · Cuisine · Landscapes</p>
+        </div>
+      </div>
+      <div class="dest-card rev d2">
+        <div class="dest-bg bg-d" style="height:100%"><div class="card-deco">NORWAY</div></div>
+        <div class="dest-overlay">
+          <p class="dest-country">Europe · 10 Days</p>
+          <p class="dest-name">Fjords & Northern Lights</p>
+          <p class="dest-detail">Nature · Photography · Serenity</p>
+        </div>
+      </div>
+      <div class="dest-card rev d3">
+        <div class="dest-bg bg-e" style="height:100%"><div class="card-deco">MALDIVES</div></div>
+        <div class="dest-overlay">
+          <p class="dest-country">Indian Ocean · 7 Days</p>
+          <p class="dest-name">Private Overwater Villas</p>
+          <p class="dest-detail">Luxury · Diving · Wellness</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="sec sec-dark" id="about">
+    <p class="sec-lbl rev">About Us</p>
+    <h2 class="sec-ttl rev d1">The Wanderers<br><em>Behind the Magic</em></h2>
+    <div class="about-grid">
+      <div class="about-txt rev-l">
+        <p>Hi — we're Journey & Co., a boutique travel design studio founded by travellers, for travellers. We believe the best journeys are the ones that change you.</p>
+        <p>Since 2016, we've been crafting hand-picked itineraries across 60+ countries — weaving together hidden gems, local encounters, and once-in-a-lifetime experiences that no algorithm can replicate.</p>
+        <p>We don't sell packages. We listen to your dreams and build the trip around your exact vision, budget, and travel style.</p>
+        <div class="tags">
+          <span class="tag-pill">Bespoke Itineraries</span>
+          <span class="tag-pill">60+ Countries</span>
+          <span class="tag-pill">Luxury Travel</span>
+          <span class="tag-pill">Adventure Trips</span>
+          <span class="tag-pill">Honeymoons</span>
+          <span class="tag-pill">Family Journeys</span>
+          <span class="tag-pill">Solo Travel</span>
+          <span class="tag-pill">Group Expeditions</span>
+        </div>
+      </div>
+      <div class="stats-grid rev-r">
+        <div class="stat"><div class="stat-n">500+</div><div class="stat-d">Bespoke trips planned worldwide</div></div>
+        <div class="stat"><div class="stat-n">60+</div><div class="stat-d">Countries across 6 continents</div></div>
+        <div class="stat"><div class="stat-n">8 yrs</div><div class="stat-d">Crafting extraordinary journeys</div></div>
+        <div class="stat"><div class="stat-n">98%</div><div class="stat-d">Client satisfaction & repeat rate</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="sec" id="services">
+    <p class="sec-lbl rev">Our Services</p>
+    <h2 class="sec-ttl rev d1">Every Journey,<br><em>Perfectly Planned</em></h2>
+    <div class="svc-grid">
+      <div class="svc rev d1"><div class="svc-ico">🗺️</div><h3 class="svc-ttl">Custom Itineraries</h3><p class="svc-dsc">Day-by-day plans tailored entirely to you — your pace, interests, and budget. No cookie-cutter tours.</p></div>
+      <div class="svc rev d2"><div class="svc-ico">✈️</div><h3 class="svc-ttl">Flights & Transfers</h3><p class="svc-dsc">Best-price flights, private transfers, and seamless connections so you never worry about logistics.</p></div>
+      <div class="svc rev d3"><div class="svc-ico">🏨</div><h3 class="svc-ttl">Luxury Accommodation</h3><p class="svc-dsc">From intimate boutique hotels to private villas and overwater bungalows — we know where to stay.</p></div>
+      <div class="svc rev d1"><div class="svc-ico">🧭</div><h3 class="svc-ttl">Local Guides</h3><p class="svc-dsc">Expert guides who reveal the soul of a place — stories, secrets, and spots guidebooks never mention.</p></div>
+      <div class="svc rev d2"><div class="svc-ico">💍</div><h3 class="svc-ttl">Honeymoons</h3><p class="svc-dsc">Romantic escapes crafted to perfection — every candle, every sunset, every surprise planned with love.</p></div>
+      <div class="svc rev d3"><div class="svc-ico">🛡️</div><h3 class="svc-ttl">24/7 Travel Support</h3><p class="svc-dsc">Our team is always on call. Flight delays, changes, emergencies — we handle everything so you relax.</p></div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="sec sec-dark">
+    <p class="sec-lbl rev">Traveller Stories</p>
+    <h2 class="sec-ttl rev d1">From Those Who've<br><em>Explored With Us</em></h2>
+    <div class="testi-grid">
+      <div class="testi rev d1">
+        <p class="testi-q">"Journey & Co. didn't just plan our honeymoon — they made it a fairytale. The Amalfi villa was beyond anything we imagined. We're already planning our next trip with them."</p>
+        <div class="testi-auth"><div class="testi-av" style="background:#d4954a">S</div><div><div class="testi-nm">Sofia & James</div><div class="testi-rl">Honeymoon · Amalfi Coast, Italy</div></div></div>
+      </div>
+      <div class="testi rev d2">
+        <p class="testi-q">"The Kyoto itinerary was perfection. Temples at dawn before the crowds, a 100-year-old kaiseki restaurant, a private tea ceremony. Absolutely unforgettable."</p>
+        <div class="testi-auth"><div class="testi-av" style="background:#4a8fa8;color:#fff">M</div><div><div class="testi-nm">Marcus Webb</div><div class="testi-rl">Cultural Journey · Japan, 14 Days</div></div></div>
+      </div>
+      <div class="testi rev d3">
+        <p class="testi-q">"As a solo female traveller I was nervous. Journey & Co. made me feel safe and completely taken care of every step of the way. Morocco was the trip of a lifetime."</p>
+        <div class="testi-auth"><div class="testi-av" style="background:#5a7a52">L</div><div><div class="testi-nm">Layla Hassan</div><div class="testi-rl">Solo Adventure · Morocco, 8 Days</div></div></div>
+      </div>
+      <div class="testi rev d4">
+        <p class="testi-q">"We took our family of five to Patagonia. Journey & Co. somehow made it magical and stress-free. The kids are obsessed with travel now — that's the best outcome!"</p>
+        <div class="testi-auth"><div class="testi-av" style="background:#2c1f3a;color:#f2ead8">T</div><div><div class="testi-nm">The Chen Family</div><div class="testi-rl">Family Expedition · Patagonia</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="sec sec-mid" id="contact">
+    <p class="sec-lbl rev">Start Planning</p>
+    <h2 class="sec-ttl rev d1">Ready to See<br><em>the World?</em></h2>
+    <div class="contact-grid">
+      <div class="c-info rev-l">
+        <p>Tell us where you want to go — or let us surprise you. We'll build your perfect trip from scratch. No commitment, just a conversation.</p>
+        <div class="c-row"><span>📧</span><span>hello@journeyandco.com</span></div>
+        <div class="c-row"><span>📞</span><span>+1 (888) 555-TRIP</span></div>
+        <div class="c-row"><span>📍</span><span>New York · London · Sydney</span></div>
+        <div class="c-row"><span>⏰</span><span>Mon–Sat, 9am–7pm (your timezone)</span></div>
+      </div>
+      <form class="c-form rev-r" onsubmit="handleSend(event)">
+        <div class="c-dbl">
+          <div class="fg"><label>First Name</label><input type="text" placeholder="Alex"></div>
+          <div class="fg"><label>Last Name</label><input type="text" placeholder="Smith"></div>
+        </div>
+        <div class="fg"><label>Email</label><input type="email" placeholder="alex@email.com"></div>
+        <div class="c-dbl">
+          <div class="fg"><label>Destination Region</label>
+            <select><option value="">Select…</option><option>Europe</option><option>Asia</option><option>Americas</option><option>Africa</option><option>Middle East</option><option>Oceania</option><option>Surprise me!</option></select>
+          </div>
+          <div class="fg"><label>Trip Type</label>
+            <select><option value="">Select…</option><option>Honeymoon</option><option>Family Trip</option><option>Adventure</option><option>Luxury Escape</option><option>Solo Travel</option><option>Group Tour</option></select>
+          </div>
+        </div>
+        <div class="fg"><label>Tell Us Your Dream</label><textarea placeholder="Where do you want to go? When? Any must-haves? Budget range?…"></textarea></div>
+        <button type="submit" class="c-submit">Send My Dream ✦</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-logo">Journey <span>&amp; Co.</span></div>
+    <p class="foot-copy">© 2026 Journey & Co. · Crafting extraordinary travel since 2016</p>
+  </footer>
+</div>
+
+<script>
+// Cursor
+const cur=document.getElementById('cur'),ring=document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop)})();
+document.querySelectorAll('a,button,.dest-card,.svc,.testi,.stat').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='54px';ring.style.height='54px';cur.style.transform='translate(-50%,-50%) scale(1.4)'});
+  el.addEventListener('mouseleave',()=>{ring.style.width='38px';ring.style.height='38px';cur.style.transform='translate(-50%,-50%) scale(1)'});
+});
+
+// Smooth scroll for all anchor links
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'})}
+  });
+});
+
+// NAV — show with solid bg only once scrolled into p2
+const nav=document.getElementById('nav');
+const p2=document.getElementById('p2');
+function updateNav(){
+  const top=p2.getBoundingClientRect().top;
+  if(top<=60){
+    nav.classList.add('visible');
+    if(top<=-40) nav.classList.add('compact');
+    else nav.classList.remove('compact');
+  } else {
+    nav.classList.remove('visible','compact');
+  }
+}
+window.addEventListener('scroll',updateNav,{passive:true});
+updateNav();
+
+// Scroll reveal
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on')}),{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rev,.rev-l,.rev-r').forEach(el=>obs.observe(el));
+
+// Stagger cards
+document.querySelectorAll('.dest-card,.svc,.testi,.stat').forEach((el,i)=>{el.style.transitionDelay=`${(i%4)*.1}s`});
+
+// Form
+function handleSend(e){
+  e.preventDefault();
+  const btn=e.target.querySelector('.c-submit'),orig=btn.textContent;
+  btn.textContent="Sent! We'll be in touch ✓";btn.style.background='#5a7a52';btn.style.color='#f2ead8';
+  setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.color='';e.target.reset()},3500);
+}
+</script>
+</body>
+</html>
